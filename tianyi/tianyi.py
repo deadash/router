@@ -5,7 +5,8 @@ import json
 
 
 URL = '192.168.1.1'
-
+UNAME = 'useradmin'
+UPWD  = 'xxx'
 
 # 登陆
 def login(username, password):
@@ -22,6 +23,20 @@ def view(session):
     r = session.post('http://' + URL + '/cgi-bin/luci/admin/settings/gwinfo', params=payload)
     return json.loads(r.text)
 
+    
+#  查看状态
+def gwstatus(session):
+    payload = {'get': 'part', '_': random.random()}
+    r = session.post('http://' + URL + '/cgi-bin/luci/admin/settings/gwstatus', params=payload)
+    return json.loads(r.text)
+    
+	
+# 查看端口映射
+def portmap_list(session):
+    payload = {'get': 'part', '_': random.random()}
+    r = session.post('http://' + URL + '/cgi-bin/luci/admin/settings/pmDisplay', params=payload)
+    return json.loads(r.text)
+    
 
 # 登出
 def logout(session, token):
@@ -38,8 +53,14 @@ def reboot(session, token):
 
 
 # example
-s = login('useradmin', '*******')
+s = login(UNAME, UPWD)
 r = view(s['session'])
+status = gwstatus(s['session'])
+pmlist = portmap_list(s['session'])
+
 print(r)
 print(r['WANIP'])
+print(status)
+print(pmlist)
+logout(s['session'], s['token'])
 # reboot(s['session'], s['token'])
